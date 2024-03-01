@@ -36,3 +36,19 @@ public class Company { // "The Company class stores information about employees.
         }
     }
 
+    public void removeStaff(int empNumOfStaffToRemove) { // "Challenge: Create a method in the Company class called removeStaff() that removes an employee from the staff arrayList (the employee’s empNum is a parameter)."
+        Employee staffToRemove = null; // set a removable employee
+        for (Employee staffMember : staff) { // consider an employee in relation to the staff list
+            if (staffMember.getEmpNum() == empNumOfStaffToRemove) { // if the empNum passed over equals that of an employee in the staff list...
+                staffToRemove = staffMember; // prime that member to be the one removed
+            }
+        }
+        if (staffToRemove == null) { // if there is no staff member with that empNum, take no action
+            System.out.println("---\nUnfortunately, there is no employee #" + empNumOfStaffToRemove + " in the staff list.");
+        } else {
+            staff.remove(staffToRemove); // otherwise, remove the employee
+            System.out.println("---\nEmployee #" + empNumOfStaffToRemove + ", " + staffToRemove.name + ", has been removed from the staff list.");
+            Employee.nextEmpNum--; // decrement the next employee number, to account for the empty slot
+        }
+    }
+}
