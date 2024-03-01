@@ -56,3 +56,32 @@ I couldn't come up with the headspace to manually review this pattern and painst
         return this.nextEmpNum;
     }
 }
+
+class Manager extends Employee { // "A particular employee has been designated a 'manager'. They are considered as a regular employee for all purposes, except that they also have a “username” and a “password” as fields..."
+
+    private String username;
+    private String password;
+
+    public Manager(String name, String email, String username, String password) { // same fields as employee, plus additional manager fields
+        this.name = name;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() { // "...with corresponding getters and setters [for username and password]."
+        return this.username;
+    }
+
+    public String getPassword() { // see above
+        return this.password;
+    }
+
+    public void setUsername(String newUsername) { // see above
+        this.username = newUsername;
+    }
+
+    public void setPassword(String newPassword) { // see above
+        this.password = newPassword;
+    }
+}
