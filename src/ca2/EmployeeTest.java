@@ -52,3 +52,85 @@ public class EmployeeTest { // "Write another class, EmployeeTest..."
         BusinessGnómes.staff.addAll(Arrays.asList(projectGroup)); // load all previously defined employees into the company array list
         BusinessGnómes.staff.addAll(Arrays.asList(managerGroup)); // load all previously defined managers into the company array list
 
+// "Bonus challenge: Create a HashSet called staffSet that will not allow two employees with the same empNum to be elements"
+
+/*/ I couldn't really come up with a scenario within the brief to demonstrate this in action, but you will hopefully be able to observe it if you edit to forcibly decrement the nextEmpNum somewhere and try adding some overlapping staff. Notionally the hashset begins with all initial employees' empNums and also gathers new empNums upon addition of any new staff. It then checks the new staff member's empNum against existing ones and, whenever a match is found, increments both the new empNum until a free empNum is found - preventing duplication - and the nextEmpNum, to set up the next staff addition. Additionally the empNum of an existing staff member is removed from the hashset if that staff member is also removed. I hope this correctly interprets the situation in mind./*/
+
+        HashSet<Integer> staffSet = new HashSet<>();
+
+        staffSet.add(employee1.getEmpNum()); // add all the starter empNums of employees and manager - continued further down in the add staff section
+        staffSet.add(employee2.getEmpNum());
+        staffSet.add(employee3.getEmpNum());
+        staffSet.add(managerGroup[0].getEmpNum());
+
+        System.out.println("---\nEmployee Administration Software for Business Gnómes Ltd\nManagers: welcome! Gnóme sweet gnóme, once again."); // horrifying welcome message
+        while (true) { // have this repeat
+            for (Manager managermember : managerGroup) { // to identify a manager
+                Scanner menuInput = new Scanner(System.in); // scan for next user input
+                if (login == false) { // if not logged in...
+                    System.out.println("---\nTo log in and perform operations, please begin by inputting your username.\n---"); // ask username
+                    inputUsername = menuInput.nextLine();
+                    System.out.print("---\nNow, please input your password.\n---\n"); // then password
+                    String inputPassword = menuInput.nextLine();
+                    if (!managermember.getUsername().equals(inputUsername) || !managermember.getPassword().equals(inputPassword)) { // if credentials are a mismatch, declare them invalid
+                        System.out.print("---\nInvalid credentials.\n");
+                    } else if (managermember.getUsername().equals(inputUsername) && managermember.getPassword().equals(inputPassword)) { // if credentials are a match, log the user in
+                        login = true; // user now logged in so avoid this step on next cycle
+                        System.out.print("---\nValidated!\n");
+                    }
+                }
+                if (login == true) { // if logged in...
+                    System.out.print("---\nWelcome, " + inputUsername + ".\nInput 1 to view current staff.\nInput 2 to add new staff.\nInput 3 to remove employees.\nInput 4 to close the software.\n---\n");
+                    String inputChoice = menuInput.nextLine(); // input your choice
+                    while (inputChoice.matches("1")) { // option to view current staff
+                        try {
+                            System.out.print("---\nPlease insert an employee number. All employees above that number will be displayed. To view all staff, input 0.\n---\n");
+                            int printEmployeesAboveThisValue = menuInput.nextInt(); // choose the preferred employee number
+                            System.out.print("---\nEmployees with an employee number above " + printEmployeesAboveThisValue + ":\n---\n");
+                            BusinessGnómes.listEmployees(printEmployeesAboveThisValue); // print whichever employees are above said value in the company
+                            inputChoice = "0"; // reset your choice
+                        } catch (InputMismatchException e) {
+                            System.out.print("---\nInvalid input.\n"); // if anything other than an integer was entered, ask again
+                            menuInput.next();
+                        }
+                    }
+                    while (inputChoice.matches("2")) { // option to add staff
+                        System.out.print("---\nInput the name of the staff member.\n---\n");
+                        String newName = menuInput.nextLine(); // input the staff's name
+                        Employee newEmployee = new Employee(); // instantiate the new employee object here
+                        newEmployee.name = newName; // assign the input to their name
+                        while (newEmployee.email == null) { // until a valid email is given, repeat
+                            System.out.print("---\nInput the email address of the staff member.\n---\n");
+                            String newEmail = menuInput.nextLine(); // input the staff member's email address
+                            newEmployee.setEmail(newEmail); // pass the email to the method for validation
+                        }
+                        while (staffSet.contains(newEmployee.empNum)) { // any time a new employee's empNum overlaps with an empNum in the bonus hashset...
+                            newEmployee.empNum++; // ...increase the new employee's empNum to avoid duplication...
+                            Employee.nextEmpNum++; // ...and also increase the nextEmpNum with it
+                        }
+                        staffSet.add(newEmployee.getEmpNum()); // add the new staff member's empNum to the bonus hashset
+                        BusinessGnómes.addNewStaff(newEmployee); // when satisfactory, add the staff to the company
+                        System.out.print("---\n" + newEmployee.name + " has been added to the staff.\n");
+                        inputChoice = "0"; // reset your choice
+                    }
+                    while (inputChoice.matches("3")) { // option to remove staff ... "Allow the manager to remove employees from the menu"
+                        try {
+                            System.out.print("---\nPlease indicate the employee number of the staff member to be removed.\n---\n"); // not forcing a valid user response to this one before returning to menu as there may be no staff remaining to remove!
+                            int empNumOfStaffToRemove = menuInput.nextInt(); // input the empNum of the staff member to remove
+                            BusinessGnómes.removeStaff(empNumOfStaffToRemove); // pass the empNum to the removal method, removing the staff member
+                            staffSet.remove(empNumOfStaffToRemove); // remove the employee's empNum from the bonus hashset
+                            inputChoice = "0"; // reset your choice
+                        } catch (InputMismatchException e) {
+                            System.out.print("---\nInvalid input.\n"); // if anything other than an integer was entered, ask again
+                            menuInput.next();
+                        }
+                    }
+                    while (inputChoice.matches("4")) { // option to close the software, including dystopian pun
+                        System.out.print("---\nClosing the Employee Administration Software. All roads lead to Gnóme. May your road be untroubled, " + inputUsername + "!\n---\n");
+                        System.exit(0); // close it out
+                    }
+                }
+            }
+        }
+    }
+}
